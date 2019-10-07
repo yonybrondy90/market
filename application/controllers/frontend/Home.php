@@ -5,7 +5,7 @@ class Home extends CI_Controller {
 
 	public function __construct(){
 		parent::__construct();
-		$this->load->model('Category_model');
+		$this->load->model('Product_model');
 	}
 
 
@@ -102,5 +102,54 @@ class Home extends CI_Controller {
             }
         }
     }
+
+    public function search(){
+        $search = $this->input->post("search");
+        $products = $this->Product_model->search($search);
+        echo json_encode($products);
+    }
+
+    public function loadRecord($rowno=0){
+ 
+        $rowperpage = 12;
+        $search = $_REQUEST['search'];
+ 
+        if($rowno != 0){
+          $rowno = ($rowno-1) * $rowperpage;
+        }
+  
+        $allcount = count($this->Product_model->pagination($search));
+ 
+        $products_record = $this->Product_model->pagination($search, $rowperpage, $rowno);
+  
+        $config['base_url'] = base_url().'frontend/home/loadRecord';
+        $config['use_page_numbers'] = TRUE;
+        $config['total_rows'] = $allcount;
+        $config['per_page'] = $rowperpage;
+ 
+        $config['full_tag_open']    = '<div class="pagging text-center"><nav><ul class="pagination">';
+        $config['full_tag_close']   = '</ul></nav></div>';
+        $config['num_tag_open']     = '<li class="page-item"><span class="page-link">';
+        $config['num_tag_close']    = '</span></li>';
+        $config['cur_tag_open']     = '<li class="page-item active"><span class="page-link">';
+        $config['cur_tag_close']    = '<span class="sr-only">(current)</span></span></li>';
+        $config['next_tag_open']    = '<li class="page-item"><span class="page-link">';
+        $config['next_tag_close']  = '<span aria-hidden="true"></span></span></li>';
+        $config['prev_tag_open']    = '<li class="page-item"><span class="page-link">';
+        $config['prev_tag_close']  = '</span></li>';
+        $config['first_tag_open']   = '<li class="page-item"><span class="page-link">';
+        $config['first_tag_close'] = '</span></li>';
+        $config['last_tag_open']    = '<li class="page-item"><span class="page-link">';
+        $config['last_tag_close']  = '</span></li>';
+ 
+        $this->pagination->initialize($config);
+ 
+        $data['pagination'] = $this->pagination->create_links();
+        $data['result'] = $products_record;
+        $data['row'] = $rowno;
+ 
+        echo json_encode($data);
+  }
+
 
 }

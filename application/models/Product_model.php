@@ -33,4 +33,21 @@ class Product_model extends CI_Model {
 	{
 		$this->db->insert_batch("products", $data);
 	}
+
+	public function search($search){
+		$this->db->like("name",$search);
+		$this->db->order_by("name");
+		$resultados = $this->db->get("products");
+		return $resultados->result();
+	}
+
+	public function pagination($search, $rowperpage = false, $rowno = false){
+		if ($rowperpage!==false && $rowno!== false) {
+			 $this->db->limit($rowperpage, $rowno);
+		}
+		$this->db->like("name",$search);
+		$this->db->order_by("name");
+		$resultados = $this->db->get("products");
+		return $resultados->result();
+	}
 }

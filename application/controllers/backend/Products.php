@@ -214,4 +214,5 @@ class Products extends CI_Controller {
         redirect(base_url()."backend/products");
     }
 
+   
 }
